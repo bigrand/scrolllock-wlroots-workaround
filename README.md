@@ -3,7 +3,7 @@
 # scrolllock-wlroots-workaround
 A workaround to activate Scroll Lock LED (the backlight in some keyboards) in wlroots based compositors.
  
-~~According to this https://github.com/swaywm/sway/issues/5342#issuecomment-642287582, the LEDs appear to be updated [post-key-release regardless of the key](https://gitlab.freedesktop.org/wlroots/wlroots/-/blob/master/types/wlr_keyboard.c#L21-L34), which causes the backlight to be disabled immediately after turning it on.~~ **[LEDs now only update when a LED changes.](https://gitlab.freedesktop.org/wlroots/wlroots/-/merge_requests/3867)**. A workaround is still needed though.
+~~According to this https://github.com/swaywm/sway/issues/5342#issuecomment-642287582, the LEDs appear to be updated [post-key-release regardless of the key](https://gitlab.freedesktop.org/wlroots/wlroots/-/blob/master/types/wlr_keyboard.c#L21-L34), which causes the backlight to be disabled immediately after turning it on.~~ **[LEDs now only update when a LED changes.](https://gitlab.freedesktop.org/wlroots/wlroots/-/merge_requests/3867)** A workaround is still needed though.
  
 If you are using GNOME/Mutter you can use these [workarounds](https://www.reddit.com/r/linuxquestions/comments/ruhse5/comment/hr0zbxj) in combination with the first workaround in this repo.
 
@@ -87,36 +87,3 @@ You can also use these [workarounds to activate the LEDs](https://www.reddit.com
 
 - Replace X with the event handler number:
 `cat /proc/bus/input/devices`
-
-
----
-&nbsp;
-## ~~#2 Workaround~~
-
-**[This patch is merged!](https://gitlab.freedesktop.org/wlroots/wlroots/-/merge_requests/3867/diffs "This patch is merged! from 0.17.0 and on!")**
-
-The Scroll Lock LED  will turn off when pressing <kbd>CapsLock</kbd> or <kbd>NumLock</kbd>, this can be "fixed" using the python script workaround and enabling the option `<forceLed>`.
-
-
-### ~~Patching process~~
-
-~~Clone `wlroots` and navigate to the `0.15.1` branch (change it to your installed version):~~
-
-    git clone https://gitlab.freedesktop.org/wlroots/wlroots.git
-    cd wlroots/
-    git checkout 0.15.1  
-    
-
- **~~Before building you have to replace `/wlroots/types/wlr_keyboard.c`~~** **~~with the patched [`wlr_keyboard.c`](https://gitlab.freedesktop.org/wlroots/wlroots/-/merge_requests/3867/diffs "`wlr_keyboard.c`").~~** **~~Be sure you are patching the correct file with the correct version, otherwise it wouldn't work. (You can patch it manually if the file and the wlroots version aren't the same).~~**
-
-~~After patching `wlr_keyboard.c`, compile `wlroots`:~~
-
-    meson -D examples=false build/
-    ninja -C build/
-
-~~Then replace your system's `libwlroots.so.10` with the patched one (the `libwlroots.so.` number could be different depending on the version of wlroots that you are compiling):~~
-
-    strip build/libwlroots.so.10
-    sudo cp -i build/libwlroots.so.10 /usr/lib/libwlroots.so.10
-
-~~Restart Sway and now the LED shouldn't turn off on post-key-release.~~
